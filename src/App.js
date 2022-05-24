@@ -1,36 +1,30 @@
+import React from 'react';
 import Card from './Components/Card'
 import Header from './Components/Header'
 import Drawer from './Components/Drawer';
 
-const array = [
-  { 
-    name: 'Мужские Кроссовки Nike Blazer Mid Suede', 
-    price: '12999',
-    imageUrl: '/image/sneakers/1.jpg'
-  },
-  { 
-    name: 'Мужские Кроссовки Nike Air Max 270', 
-    price: '13999',
-    imageUrl: '/image/sneakers/2.jpg'
-  },
-  { 
-    name: 'Мужские Кроссовки Nike Blazer Mid Suede', 
-    price: '8499',
-    imageUrl: '/image/sneakers/3.jpg'
-  },
-  { 
-    name: 'Кроссовки Puma X Aka Boku Future Rider', 
-    price: '8999',
-    imageUrl: '/image/sneakers/4.jpg'
-  }
-]
-
-
 function App() {
+  const [items, setItems] = React.useState([]);
+  const [cartItems, setCartItems] = React.useState([]);
+  const [cartOpened, setCartOpened] = React.useState(false);
+
+
+  React.useEffect(() => {
+    fetch('https://628bd4d3667aea3a3e36fc1d.mockapi.io/items').then(res => {
+      return res.json();
+    }).then(json => {
+      setItems(json);
+    });
+  }, []);
+
+  const onAddToCart = (obj) => {
+    setCartItems((prev) => [...prev, obj]);
+  };
+
   return (
     <div className="wrapper clear">
-      <Drawer />
-      <Header />
+      {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)}/> : null}
+      <Header onClickCart={() => setCartOpened(true) }/>
       
       <div className="content p-40">
         <div className="d-flex align-center justify-between mb-40">
@@ -41,16 +35,16 @@ function App() {
           </div>
         </div>
         
-        <div className="d-flex">
+        <div className="d-flex flex-wrap">
 
-          {array.map((obj) => (
-          <Card 
-            name={obj.name}
-            price={obj.price}
-            imageUrl={obj.imageUrl}/>
-          ))}
-          
-          
+          {items.map((item) => (
+            <Card 
+              name={item.name}
+              price={item.price}
+              imageUrl={item.imageUrl}
+              onClickFavorite={() => console.log('Added bookmarks')}
+              onClickPlus={(obj) => onAddToCart(obj)}/>
+            ))}
           
         </div>
       </div>
