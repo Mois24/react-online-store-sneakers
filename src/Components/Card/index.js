@@ -6,6 +6,7 @@ import styles from './Card.module.scss';
 
 function Card({ 
     id, 
+    parentId,
     title, 
     imageUrl, 
     price, 
@@ -16,13 +17,14 @@ function Card({
 }) {
     const { isItemAdded } = React.useContext(AppContext);// из объекта AppContext вытягиваем функцию isItemAdded
     const [isFavorite, setIsFavorite] = React.useState(favorited);
+    const obj = {id, parentId: id, title, imageUrl, price};
 
     const handleOnClick = () => {
-        onPlus({id, title, imageUrl, price});
+        onPlus(obj);
     };
 
     const onClickFavorite = () => {
-        onFavorite({id, title, imageUrl, price});
+        onFavorite(obj);
         setIsFavorite(!isFavorite);
     };
 
@@ -44,9 +46,12 @@ function Card({
                 <rect x="115" y="225" rx="10" ry="10" width="35" height="32" />
             </ContentLoader>) : (
                 <>
+                    {onFavorite && 
                     <div className={styles.favorite} onClick={onClickFavorite}>
-                    <img src={isFavorite ? '/image/heart-liked.svg' : "/image/heart-unliked.svg"} alt="unliked" />
-                    </div>
+                    <img src={isFavorite ? '/image/heart-liked.svg' : "/image/heart-unliked.svg"} 
+                    alt="unliked" 
+                    />
+                    </div>}
                     <img width='100%' height={135} src={imageUrl} alt="Sneakers"/>
                     <h5>{title}</h5>
                     <div className="d-flex justify-between align-center">
@@ -54,10 +59,13 @@ function Card({
                             <span>Цена:</span>
                             <b>{price} руб.</b>
                         </div>
-                        <img className={styles.plus} 
+                        {onPlus && <img 
+                        className={styles.plus} 
                         onClick={handleOnClick} 
                         // Здесь проверяем, если id есть в cartItems - тогда true, если нет id - false
-                        src={isItemAdded(id) ? "/image/btn-checked.svg" : "/image/btn-plus.svg"} alt="Plus"/>
+                        src={isItemAdded(id) ? "/image/btn-checked.svg" : "/image/btn-plus.svg"} 
+                        alt="Plus"
+                        />}
                     </div>
                 </>
                 )
